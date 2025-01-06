@@ -1,47 +1,50 @@
 name: Publish Pull Request
 on:
-  pull_request:
-    branches:
-      - develop
+    pull_request:
+        branches:
+            - develop
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+    publish:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: write
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14.x
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18.x
+                  cache: npm
 
-      - name: Setup Expo
-        uses: expo/expo-github-action@v6
-        with:
-          expo-version: 4.x
-          expo-cache: true
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+            - name: Setup Expo
+              uses: expo/expo-github-action@v8
+              with:
+                  expo-version: latest
+                  expo-cache: true
+                  eas-version: latest
+                  token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Install Dependencies
-        run: yarn
+            - name: Install dependencies
+              run: yarn
 
-      - name: Publish to Expo Go
-        run: NODE_ENV=dev expo publish --non-interactive --release-channel pr-${{ github.event.number }}
+            - name: Configure EAS Update
+              run: eas update:configure
 
-      - name: Add Expo Link to PR
-        uses: mshick/add-pr-comment@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          message: |
-            ## Test this PR with Expo Go
-            ![Expo QR](https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=exp://exp.host/@andreaslydemann/todo-app?release-channel=pr-${{ github.event.number }})
-            **------ Build published to [Expo](https://exp.host/@andreaslydemann/todo-app?release-channel=pr-${{ github.event.number }}) ------**
-Beta
-0 / 0
-used queries
+            - name: Publish to EAS Update
+              run: |
+                  BRANCH_NAME=pr-${{ github.event.number }}
+                  eas update --branch $BRANCH_NAME --non-interactive --message "PR #${{ github.event.number }}"
+
+            - name: Add EAS Update Link to PR
+              uses: mshick/add-pr-comment@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  message: |
+                      ## Test this PR with EAS Update
+                      ![Expo QR](https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=exp://u.expo.dev/${{ secrets.EXPO_ACCOUNT_NAME }}/vifin-app?channel-name=pr-${{ github.event.number }})
+                      **------ Build published to [EAS Update](https://expo.dev/accounts/${{ secrets.EXPO_ACCOUNT_NAME }}/projects/Cloud-ticket-scan-fe/updates/pr-${{ github.event.number }}) ------**
