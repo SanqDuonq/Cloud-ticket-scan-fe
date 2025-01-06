@@ -14,7 +14,7 @@ export default function HomeScreen() {
           fontSize: 100,
           color: 'red'
         }}
-      > Sang
+      > Welcome to my app
       </Text>
     </View>
   );

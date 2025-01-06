@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Cloud-ticket-scan-fe",
-    "slug": "Cloud-ticket-scan-fe",
+    "slug": "cloud-ticket-scan-fe",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -36,6 +36,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "a325f36e-feea-4bff-9614-6cded28a877a"
+      }
+    },
+    "owner": "sanqduonq"
   }
 }
